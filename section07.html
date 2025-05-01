@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sleep Hours Chart</title>
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .eye {
+      position: relative;
+      width: 100px;
+      height: 50px;
+      margin-bottom: 40px;
+    }
+
+    .eye::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100px;
+      height: 50px;
+      background: white;
+      border-radius: 50% / 50%;
+      transition: all 0.3s;
+    }
+
+    .eye.half-closed::before {
+      height: 25px;
+      top: 12px;
+    }
+
+    .iris {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      background: #1da1f2;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .pupil {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      background: black;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.3s;
+    }
+
+    .chart {
+      display: flex;
+      gap: 15px;
+      align-items: flex-end;
+      position: relative;
+    }
+
+    .bar {
+      width: 30px;
+      background: #fffff0; /* 아이보리 */
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .bar:hover {
+      transform: scale(1.1);
+    }
+
+    .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      color: #000;
+      padding: 5px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      font-size: 12px;
+    }
+
+    .bar:hover .tooltip {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="eye" id="eye">
+    <div class="iris" id="iris"></div>
+    <div class="pupil" id="pupil"></div>
+  </div>
+
+  <div class="chart">
+    <div class="bar" style="height: 70px;" data-hours="7">
+      <div class="tooltip">7 hours</div>
+    </div>
+    <div class="bar" style="height: 30px;" data-hours="3">
+      <div class="tooltip">3 hours</div>
+    </div>
+    <div class="bar" style="height: 80px;" data-hours="8">
+      <div class="tooltip">8 hours</div>
+    </div>
+    <div class="bar" style="height: 20px;" data-hours="2">
+      <div class="tooltip">2 hours</div>
+    </div>
+    <div class="bar" style="height: 90px;" data-hours="9">
+      <div class="tooltip">9 hours</div>
+    </div>
+    <div class="bar" style="height: 60px;" data-hours="6">
+      <div class="tooltip">6 hours</div>
+    </div>
+    <div class="bar" style="height: 100px;" data-hours="10">
+      <div class="tooltip">10 hours</div>
+    </div>
+  </div>
+
+  <script>
+    const bars = document.querySelectorAll('.bar');
+    const eye = document.getElementById('eye');
+    const iris = document.getElementById('iris');
+    const pupil = document.getElementById('pupil');
+
+    bars.forEach(bar => {
+      bar.addEventListener('mouseover', () => {
+        const hours = parseInt(bar.getAttribute('data-hours'));
+
+        // 눈 색깔 및 형태 변경
+        if (hours >= 2 && hours <= 3) {
+          iris.style.background = 'red';
+          eye.classList.add('half-closed');
+        } else if (hours >= 5 && hours <= 6) {
+          iris.style.background = 'orange';
+          eye.classList.remove('half-closed');
+        } else if (hours >= 7 && hours <= 10) {
+          iris.style.background = 'green';
+          eye.classList.remove('half-closed');
+        }
+
+        // 눈동자 크기 줄이기
+        iris.style.transform = 'translate(-50%, -50%) scale(0.7)';
+        pupil.style.transform = 'translate(-50%, -50%) scale(0.7)';
+      });
+
+      bar.addEventListener('mouseout', () => {
+        iris.style.background = '#1da1f2';
+        eye.classList.remove('half-closed');
+
+        iris.style.transform = 'translate(-50%, -50%) scale(1)';
+        pupil.style.transform = 'translate(-50%, -50%) scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>
