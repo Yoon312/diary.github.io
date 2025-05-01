@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Shelf Design</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #ff00a6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .shelf {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .book {
+      background-color: white;
+      color: #000000;
+      writing-mode: vertical-rl;  /* 세로로 텍스트 방향 설정 */
+      text-orientation: mixed;
+      font-family: sans-serif;
+      padding: 20px 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 3px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+
+    /* Book sizes */
+    .book:nth-child(1) { height: 100px; width: 40px; font-size: 14px; }
+    .book:nth-child(2) { height: 230px; width: 60px; font-size: 16px; font-weight: bold; }
+    .book:nth-child(3) { height: 160px; width: 50px; font-size: 14px; }
+    .book:nth-child(4) { height: 360px; width: 70px; font-size: 18px; font-weight: bold; }
+    .book:nth-child(5) { height: 280px; width: 15px; font-size: 18px; }
+    .book:nth-child(6) { height: 180px; width: 80px; font-size: 40px; font-weight: bold; writing-mode: horizontal-tb; }
+    .book:nth-child(7) { height: 320px; width: 55px; font-size: 20px; transform: rotate(-10deg); }
+
+    /* Hover effects */
+    .book:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="shelf">
+    <div class="book">Grid Systems in Graphic Design</div>
+    <div class="book">Little women</div>
+    <div class="book">YOU ARE HERE 2</div>
+    <div class="book">Vegetarian - Han Gang</div>
+    <div class="book">NEW FOLK ART</div>
+    <div class="book">1</div>
+    <div class="book">GOOD BY DESIGN</div>
+  </div>
+</body>
+</html>
