@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Section 2 – Weekly Screen Time</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background-color: #fff8f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      padding: 40px;
+      position: relative;
+    }
+
+    .bar {
+      position: relative;
+      width: 80px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .bar:hover {
+      transform: translateY(-10px);
+    }
+
+    .label {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-bottom: 10px;
+      background: black;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      display: none;
+      white-space: nowrap;
+    }
+
+    .bar:hover .tooltip {
+      display: block;
+    }
+
+    /* Single black book icon above the graph */
+    .book-icon {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 30px;
+      background: #000;
+      border-radius: 2px 6px 6px 2px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    }
+
+    /* Book spine */
+    .book-icon::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: #333;
+      border-radius: 2px 0 0 2px;
+    }
+
+    /* Pages (hidden by default) */
+    .page {
+      position: absolute;
+      right: 2px;
+      top: 2px;
+      width: 36px;
+      height: 26px;
+      background: #fff;
+      transform-origin: left center;
+      box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+      border-radius: 0 3px 3px 0;
+      display: none; /* Initially hidden */
+    }
+
+    /* Show and animate pages only when hovering any bar */
+    .bar-chart:hover .page {
+      display: block;
+    }
+
+    .page-1 {
+      animation: pageTurn 2s infinite;
+    }
+
+    .page-2 {
+      animation: pageTurn 2s infinite 0.5s;
+    }
+
+    .page-3 {
+      animation: pageTurn 2s infinite 1s;
+    }
+
+    @keyframes pageTurn {
+      0% {
+        transform: perspective(100px) rotateY(0deg);
+      }
+      50% {
+        transform: perspective(100px) rotateY(-90deg);
+      }
+      100% {
+        transform: perspective(100px) rotateY(-180deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bar-chart">
+    <!-- Single book icon above the graph -->
+    <div class="book-icon">
+      <div class="page page-1"></div>
+      <div class="page page-2"></div>
+      <div class="page page-3"></div>
+    </div>
+
+    <!-- Bars -->
+    <div class="bar" style="height: 100px; background-color: #FF5554;">
+      <div class="tooltip">Monday: 2.5h</div>
+      <div class="label">MON</div>
+    </div>
+    <div class="bar" style="height: 140px; background-color: #FFC73D;">
+      <div class="tooltip">Tuesday: 3.5h</div>
+      <div class="label">TUE</div>
+    </div>
+    <div class="bar" style="height: 180px; background-color: #FA5CAE;">
+      <div class="tooltip">Wednesday: 4.5h</div>
+      <div class="label">WED</div>
+    </div>
+    <div class="bar" style="height: 120px; background-color: #F79234;">
+      <div class="tooltip">Thursday: 3h</div>
+      <div class="label">THU</div>
+    </div>
+    <div class="bar" style="height: 200px; background-color: #F44336;">
+      <div class="tooltip">Friday: 5h</div>
+      <div class="label">FRI</div>
+    </div>
+    <div class="bar" style="height: 160px; background-color: #CDDC39;">
+      <div class="tooltip">Saturday: 4h</div>
+      <div class="label">SAT</div>
+    </div>
+    <div class="bar" style="height: 80px; background-color: #838383;">
+      <div class="tooltip">Sunday: 2h</div>
+      <div class="label">SUN</div>
+    </div>
+  </div>
+</body>
+</html>
