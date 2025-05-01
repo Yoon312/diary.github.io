@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>빈티지 레코드판</title>
+  <style>
+    body {
+      background-color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    canvas {
+      transition: transform 0.5s;
+    }
+    canvas:hover {
+      animation: spin 2s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <audio id="music" preload="auto">
+    <!-- 노래 URL을 추가 -->
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+  </audio>
+
+  <script>
+    let musicPlayer;
+
+    function setup() {
+      createCanvas(400, 400);
+      angleMode(DEGREES);
+      
+      // musicPlayer로 오디오 엘리먼트 선택
+      musicPlayer = select('#music');
+    }
+
+    function draw() {
+      background(224); // 연회색 배경
+
+      translate(width / 2, height / 2);
+
+      // 레코드 바탕
+      noStroke();
+      fill(0);
+      ellipse(0, 0, 280, 280);
+
+      // 어두운 회색 원형 선들 (가장 위 레이어)
+      stroke(100);
+      strokeWeight(1.5);
+      noFill();
+      for (let i = 0; i < 10; i++) {
+        let baseRadius = map(i, 0, 13, 60, 130);
+        let radius40 = min(baseRadius * 1.2, 140);
+        let radius20 = min(baseRadius * 1.2, 140);
+        arc(0, 0, radius40 * 2, radius40 * 2, 20, 80);
+        arc(0, 0, radius20 * 2, radius20 * 2, 200, 300);
+      }
+
+      // 중앙 라벨
+      fill(220, 90, 30); // 주황색
+      noStroke();
+      ellipse(0, 0, 80, 80);
+
+      // 중앙 레이어
+      fill(180, 70, 20);
+      ellipse(0, 0, 40, 40);
+
+      fill(150);
+      ellipse(0, 0, 10, 10);
+
+      // 추가 링
+      stroke(100);
+      strokeWeight(0.5);
+      noFill();
+      ellipse(0, 0, 50, 50);
+      ellipse(0, 0, 60, 60);
+    }
+
+    // 레코드판 hover 시 노래 재생
+    function mouseEntered() {
+      musicPlayer.elt.play(); // 노래 시작
+    }
+
+    // 레코드판 hover가 끝나면 노래 멈추기
+    function mouseExited() {
+      musicPlayer.elt.pause(); // 노래 멈추기
+      musicPlayer.elt.currentTime = 0;  // 노래를 처음부터 다시 시작하도록 설정
+    }
+
+    // canvas에 mouseEntered, mouseExited 이벤트 추가
+    function setup() {
+      createCanvas(400, 400);
+      angleMode(DEGREES);
+      let canvasElement = select('canvas');
+      canvasElement.mouseOver(mouseEntered);
+      canvasElement.mouseOut(mouseExited);
+    }
+
+  </script>
+</body>
+</html>
