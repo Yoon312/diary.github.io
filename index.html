@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Everyday Chronicles</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      background-color: #f0f0e8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 800px;
+    }
+
+    .tabs {
+      display: flex;
+      position: relative;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      margin-right: 2px;
+      z-index: 1;
+    }
+
+    .tab[data-id="01"] { background-color: #000000; }
+    .tab[data-id="02"] { background-color: #de0085; }
+    .tab[data-id="03"] { background-color: #838383; }
+    .tab[data-id="04"] { background-color: #CDDC39; }
+    .tab[data-id="05"] { background-color: #f0ebba; color: black; }
+    .tab[data-id="06"] { background-color: #f96666; }
+    .tab[data-id="07"] { background-color: #F44336; }
+
+    .content {
+      background-color: #000000;
+      color: white;
+      padding: 90px;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="tabs">
+      <div class="tab" data-id="01">01</div>
+      <div class="tab" data-id="02">02</div>
+      <div class="tab" data-id="03">03</div>
+      <div class="tab" data-id="04">04</div>
+      <div class="tab" data-id="05">05</div>
+      <div class="tab" data-id="06">06</div>
+      <div class="tab" data-id="07">07</div>
+    </div>
+    <div class="content" id="content">
+      <h2>Everyday<br>Chronicles</h2>
+      <p>-<br>SECTION 01<br>10.02.2024-17.02.2024<br>-</p>
+    </div>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const id = tab.getAttribute('data-id');
+        // 다른 페이지로 이동
+        window.location.href = `section${id}.html`;
+      });
+    });
+  </script>
+
+</body>
+</html>
