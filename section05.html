@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>빈티지 레코드판</title>
+  <style>
+    body {
+      background-color: #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    canvas {
+      transition: transform 0.5s;
+      cursor: pointer;
+    }
+    canvas.spin {
+      animation: spin 2s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 300px;
+    }
+    .progress-container {
+      width: 100%;
+      height: 5px;
+      background: #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #333;
+      border-radius: 5px;
+      width: 0%;
+    }
+    .volume-container, .speed-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    button {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #555;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    #eqVisualizer {
+      background-color: #111;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="recordCanvas" width="400" height="400"></canvas>
+  
+  <div class="controls">
+    <button id="playPauseBtn">재생</button>
+
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="volume-container">
+      <span>🔈</span>
+      <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.7">
+    </div>
+
+    <div class="speed-container">
+      <label for="speedControl">속도 🎚️</label>
+      <input type="range" id="speedControl" min="0.5" max="1.5" step="0.01" value="1">
+    </div>
+  </div>
+
+  <canvas id="eqVisualizer" width="300" height="50"></canvas>
+
+  <audio id="music" preload="auto">
+    <source src="music/your-song.mp3" type="audio/mp3">
+    브라우저가 오디오 요소를 지원하지 않습니다.
+  </audio>
+
+  <script>
+    const canvas = document.getElementById('recordCanvas');
+    const ctx = canvas.getContext('2d');
+    const musicPlayer = document.getElementById('music');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressContainer = document.getElementById('progressContainer');
+    const volumeControl = document.getElementById('volumeControl');
+    const speedControl = document.getElementById('speedControl');
+
+    const eqCanvas = document.getElementById('eqVisualizer');
+    const eqCtx = eqCanvas.getContext('2d');
+
+    let isPlaying = false;
+    let isHovering = false;
+    let audioCtx, analyser, source, dataArray, bufferLength;
+
+    function setupAudio() {
+      musicPlayer.volume = volumeControl.value;
+      musicPlayer.playbackRate = speedControl.value;
+
+      volumeControl.addEventListener('input', () => {
+        musicPlayer.volume = volumeControl.value;
+      });
+
+      speedControl.addEventListener('input', () => {
+        musicPlayer.playbackRate = speedControl.value;
+      });
+
+      musicPlayer.addEventListener('timeupdate', updateProgress);
+
+      progressContainer.addEventListener('click', (e) => {
+        const width = progressContainer.clientWidth;
+        const clickX = e.offsetX;
+        const duration = musicPlayer.duration;
+        musicPlayer.currentTime = (clickX / width) * duration;
+      });
+
+      playPauseBtn.addEventListener('click', togglePlay);
+
+      musicPlayer.addEventListener('ended', () => {
+        isPlaying = false;
+        playPauseBtn.textContent = '재생';
+        canvas.classList.remove('spin');
+      });
+    }
+
+    function togglePlay() {
+      if (isPlaying) {
+        musicPlayer.pause();
+        playPauseBtn.textContent = '재생';
+        canvas.classList.remove('spin');
+      } else {
+        musicPlayer.play();
+        playPauseBtn.textContent = '일시정지';
+        canvas.classList.add('spin');
+        if (!audioCtx) setupVisualizer();
+      }
+      isPlaying = !isPlaying;
+    }
+
+    function updateProgress() {
+      const { currentTime, duration } = musicPlayer;
+      const progressPercent = (currentTime / duration) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+    }
+
+    function drawRecord() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 140, 0, Math.PI * 2);
+      ctx.fillStyle = '#000';
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgb(100)';
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 10; i++) {
+        let baseRadius = 60 + (i * 7);
+        let radius40 = Math.min(baseRadius * 1.2, 140);
+        let radius20 = Math.min(baseRadius * 1.2, 140);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, radius40, 20 * Math.PI / 180, 80 * Math.PI / 180);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, radius20, 200 * Math.PI / 180, 300 * Math.PI / 180);
+        ctx.stroke();
+      }
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 40, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgb(220, 90, 30)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 20, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgb(180, 70, 20)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgb(150, 150, 150)';
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgb(100)';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.arc(0, 0, 25, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, 0, 30, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgb(70, 70, 70)';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 10; i++) {
+        let baseRadius = 60 + ((130 - 60) * (i / 13));
+        let radius40 = Math.min(baseRadius * 1.2, 140);
+        let radius20 = Math.min(baseRadius * 1.2, 140);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, radius40, 20 * Math.PI / 180, 80 * Math.PI / 180);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, radius20, 200 * Math.PI / 180, 300 * Math.PI / 180);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function setupMouseEvents() {
+      canvas.addEventListener('click', () => {
+        togglePlay();
+      });
+
+      canvas.addEventListener('mouseenter', () => {
+        isHovering = true;
+        if (isPlaying) {
+          canvas.classList.add('spin');
+        }
+      });
+
+      canvas.addEventListener('mouseleave', () => {
+        isHovering = false;
+        if (!isPlaying) {
+          canvas.classList.remove('spin');
+        }
+      });
+    }
+
+    function setupVisualizer() {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      source = audioCtx.createMediaElementSource(musicPlayer);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 64;
+      bufferLength = analyser.frequencyBinCount;
+      dataArray = new Uint8Array(bufferLength);
+
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      drawEQ();
+    }
+
+    function drawEQ() {
+      requestAnimationFrame(drawEQ);
+      analyser.getByteFrequencyData(dataArray);
+
+      eqCtx.clearRect(0, 0, eqCanvas.width, eqCanvas.height);
+      const barWidth = (eqCanvas.width / 10) - 4;
+
+      for (let i = 0; i < 10; i++) {
+        const barHeight = dataArray[i] / 2;
+        eqCtx.fillStyle = 'lime';
+        eqCtx.fillRect(i * (barWidth + 4), eqCanvas.height - barHeight, barWidth, barHeight);
+      }
+    }
+
+    function init() {
+      drawRecord();
+      setupAudio();
+      setupMouseEvents();
+
+      document.addEventListener('dragover', (e) => {
+        e.preventDefault();
+      });
+
+      document.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.match('audio.*')) {
+          const url = URL.createObjectURL(file);
+          musicPlayer.src = url;
+          musicPlayer.play();
+          isPlaying = true;
+          playPauseBtn.textContent = '일시정지';
+          canvas.classList.add('spin');
+          if (!audioCtx) setupVisualizer();
+        }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
+
+
+
+
+
